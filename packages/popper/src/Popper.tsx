@@ -79,7 +79,6 @@ export function Popper(props: PopperProps) {
     setIsMounted(true)
   }, [])
 
-  const [anchorRef, setAnchorRef] = React.useState<any>()
   const [arrowEl, setArrow] = React.useState<any>(null)
   const [arrowSize, setArrowSize] = React.useState(0)
   const offsetOptions = offset ?? arrowSize
@@ -99,10 +98,6 @@ export function Popper(props: PopperProps) {
   })
 
   const { refs, middlewareData } = floating
-
-  useIsomorphicLayoutEffect(() => {
-    floating.refs.setReference(anchorRef)
-  }, [anchorRef])
 
   if (isWeb) {
     React.useEffect(() => {
@@ -141,7 +136,7 @@ export function Popper(props: PopperProps) {
 
   return (
     <PopperContext.Provider
-      anchorRef={setAnchorRef}
+      anchorRef={floating.refs.setReference}
       size={size}
       arrowRef={setArrow}
       arrowStyle={middlewareData.arrow}

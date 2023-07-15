@@ -7,6 +7,7 @@ export type TooltipProps = PopperProps & {
     unstyled?: boolean;
     children?: React.ReactNode;
     onOpenChange?: (open: boolean) => void;
+    followMouse?: boolean;
     focus?: {
         enabled?: boolean;
         keyboardOnly?: boolean;
@@ -31,6 +32,7 @@ export declare const Tooltip: React.ForwardRefExoticComponent<PopperProps & {
     unstyled?: boolean | undefined;
     children?: React.ReactNode;
     onOpenChange?: ((open: boolean) => void) | undefined;
+    followMouse?: boolean | undefined;
     focus?: {
         enabled?: boolean | undefined;
         keyboardOnly?: boolean | undefined;

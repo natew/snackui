@@ -2,6 +2,7 @@ import '@tamagui/polyfill-dev'
 
 import {
   FloatingDelayGroup,
+  useClientPoint,
   useDelayGroup,
   useDelayGroupContext,
   useDismiss,
@@ -73,6 +74,7 @@ export type TooltipProps = PopperProps & {
   unstyled?: boolean
   children?: React.ReactNode
   onOpenChange?: (open: boolean) => void
+  followMouse?: boolean
   focus?: {
     enabled?: boolean
     keyboardOnly?: boolean
@@ -118,6 +120,7 @@ const TooltipComponent = React.forwardRef(function Tooltip(
       : 0,
     onOpenChange: onOpenChangeProp,
     focus,
+    followMouse,
     open: openProp,
     ...restProps
   } = props
@@ -146,21 +149,33 @@ const TooltipComponent = React.forwardRef(function Tooltip(
       open,
       onOpenChange,
     })
+
     const { getReferenceProps, getFloatingProps } = useInteractions([
+      useClientPoint(floating.context, {
+        enabled: followMouse,
+      }),
       useHover(floating.context, { delay, restMs }),
       useFocus(floating.context, focus),
       useRole(floating.context, { role: 'tooltip' }),
       useDismiss(floating.context),
       useDelayGroup(floating.context, { id }),
     ])
+
     return {
       ...floating,
-      getReferenceProps,
       getFloatingProps,
+      getReferenceProps,
     } as any
   }
 
-  const useFloatingContext = React.useCallback(useFloatingFn, [id, delay, open])
+  const useFloatingContext = React.useCallback(useFloatingFn, [
+    id,
+    delay,
+    open,
+    restMs,
+    followMouse,
+    focus,
+  ])
   const onCustomAnchorAdd = React.useCallback(() => setHasCustomAnchor(true), [])
   const onCustomAnchorRemove = React.useCallback(() => setHasCustomAnchor(false), [])
   const contentId = React.useId()
