@@ -1,15 +1,35 @@
+import { Button } from '@tamagui/button'
 import {
   ColorStyleProp,
   GetProps,
+  Stack,
+  composeEventHandlers,
   isWeb,
   setupReactNative,
   styled,
+  useComposedRefs,
+  useProps,
   useTheme,
+  withStaticProperties,
 } from '@tamagui/core'
 import { useFocusable } from '@tamagui/focusable'
+import {
+  RefObject,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { TextInput } from 'react-native'
 
 import { inputSizeVariant } from '../helpers/inputHelpers'
+import {
+  END_INPUT_ADORNMENT_NAME,
+  START_INPUT_ADORNMENT_NAME,
+  useComposedInput,
+} from './useComposedInput'
 
 setupReactNative({
   TextInput,
@@ -39,47 +59,197 @@ export const defaultStyles = {
   hoverStyle: {
     borderColor: '$borderColorHover',
   },
-
-  focusStyle: {
-    outlineColor: '$borderColorFocus',
-    outlineWidth: 2,
-    outlineStyle: 'solid',
-    borderColor: '$borderColorFocus',
-  },
 } as const
 
-export const InputFrame = styled(
+export const InputFrame = styled(Stack, {
+  name: 'InputFrame',
+  padding: 0,
+  flexDirection: 'row',
+  overflow: 'hidden',
+  tabIndex: -1,
+
+  variants: {
+    unstyled: {
+      false: defaultStyles,
+    },
+
+    size: {
+      '...size': inputSizeVariant,
+    },
+
+    isFocused: {
+      true: {
+        outlineColor: '$borderColorFocus',
+        outlineWidth: 2,
+        outlineStyle: 'solid',
+        borderColor: '$borderColorFocus',
+      },
+    },
+  } as const,
+
+  defaultVariants: {
+    unstyled: false,
+  },
+})
+
+const InputControl = styled(
   TextInput,
   {
-    name: 'Input',
-
-    variants: {
-      unstyled: {
-        false: defaultStyles,
-      },
-
-      size: {
-        '...size': inputSizeVariant,
-      },
-    } as const,
-
-    defaultVariants: {
-      unstyled: false,
-    },
+    name: 'InputControl',
+    flex: 1,
+    paddingHorizontal: '$2',
   },
   {
     isInput: true,
   }
 )
 
-export type InputProps = Omit<GetProps<typeof InputFrame>, 'placeholderTextColor'> & {
+type InputContextValue = {
+  /**
+   * Direct ref to the input field, this will control the
+   * actions of the input field.
+   */
+  ref?: RefObject<TextInput>
+
+  /**
+   * Set the focus state of the input field.
+   */
+  setIsFocused: (focused: boolean) => void
+}
+
+const InputRefContext = createContext<InputContextValue>({
+  ref: undefined,
+  setIsFocused: () => undefined,
+})
+
+/**
+ * Hook to access the input context.
+ */
+export const useInputRefContext = () => useContext(InputRefContext)
+
+export type InputProps = Omit<GetProps<typeof InputControl>, 'placeholderTextColor'> & {
   placeholderTextColor?: ColorStyleProp
   rows?: number
 }
 
-export const Input = InputFrame.styleable<InputProps>((propsIn, ref) => {
-  const props = useInputProps(propsIn, ref)
-  return <InputFrame {...props} />
+const BASE_INPUT_ADORNMENT_NAME = 'BaseInputAdornment'
+
+const BaseInputAdornment = styled(Stack, {
+  name: BASE_INPUT_ADORNMENT_NAME,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingHorizontal: '$2',
+  backgroundColor: '$borderColor',
+  pointerEvents: 'none',
+})
+
+const InputStartAdornmentMain = styled(BaseInputAdornment, {
+  name: START_INPUT_ADORNMENT_NAME,
+})
+const InputEndAdornmentMain = styled(BaseInputAdornment, {
+  name: END_INPUT_ADORNMENT_NAME,
+})
+
+const BaseInputButtonAdornment = styled(Button, {
+  name: BASE_INPUT_ADORNMENT_NAME,
+  justifyContent: 'center',
+  alignItems: 'center',
+  // minWidth: '$4',
+  // minHeight: '$4',
+  paddingHorizontal: '$2',
+  backgroundColor: '$borderColor',
+  borderRadius: 0,
+})
+
+const InputStartAdornmentButton = styled(BaseInputButtonAdornment, {
+  name: START_INPUT_ADORNMENT_NAME,
+  variants: {
+    isEnd: {
+      true: {
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+      },
+      false: {
+        borderRadius: 0,
+      },
+    },
+  } as const,
+})
+
+const InputEndAdornmentButton = styled(BaseInputButtonAdornment, {
+  name: END_INPUT_ADORNMENT_NAME,
+  variants: {
+    isEnd: {
+      true: {
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+      },
+      false: {
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+      },
+    },
+  } as const,
+})
+
+const InputStartAdornment = withStaticProperties(InputStartAdornmentMain, {
+  Button: InputStartAdornmentButton,
+})
+const InputEndAdornment = withStaticProperties(InputEndAdornmentMain, {
+  Button: InputEndAdornmentButton,
+})
+
+const InputMain = InputFrame.styleable<InputProps>((propsIn, ref) => {
+  const {
+    ref: focusRef,
+    children,
+    onFocus,
+    onBlur,
+    ...extraInputProps
+  } = useInputProps(propsIn, ref)
+  const [isFocused, setIsFocused] = useState(false)
+  const textInputRef = useRef<TextInput>(null)
+  const passedRef = useComposedRefs(textInputRef, focusRef)
+
+  const { startAdornments, endAdornments } = useComposedInput(children)
+
+  const inputContextValues = useMemo(
+    () => ({
+      ref: textInputRef,
+      setIsFocused,
+    }),
+    []
+  )
+
+  useEffect(() => {
+    if (propsIn.disabled) setIsFocused(false)
+  }, [propsIn.disabled])
+
+  return (
+    <InputRefContext.Provider value={inputContextValues}>
+      <InputFrame
+        isFocused={isFocused}
+        onPress={() => textInputRef.current?.focus()}
+        {...propsIn}
+      >
+        {startAdornments}
+        <InputControl
+          ref={passedRef}
+          onFocus={composeEventHandlers(onFocus, () => setIsFocused(true))}
+          onBlur={composeEventHandlers(onBlur, () => setIsFocused(false))}
+          {...extraInputProps}
+        />
+        {endAdornments}
+      </InputFrame>
+    </InputRefContext.Provider>
+  )
+})
+
+export const Input = withStaticProperties(InputMain, {
+  Start: InputStartAdornment,
+  End: InputEndAdornment,
 })
 
 export function useInputProps(props: InputProps, ref: any) {
