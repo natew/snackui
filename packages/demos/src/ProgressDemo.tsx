@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
-import type { SizeTokens } from 'tamagui'
-import { Button, Paragraph, Progress, Slider, XStack, YStack } from 'tamagui'
+import { Platform } from 'react-native'
+import { Button, Paragraph, Progress, SizeTokens, Slider, XStack, YStack } from 'tamagui'
 
 export function ProgressDemo() {
   const [size, setSize] = useState(4)
-  const [progress, setProgress] = useState(20)
+  const [progress, setProgress] = useState(0)
   const sizeProp = `$${size}` as SizeTokens
 
   useEffect(() => {
-    const timer = setTimeout(() => setProgress(60), 1000)
+    const timer = setTimeout(() => setProgress(50), 1000)
     return () => {
       clearTimeout(timer)
     }
@@ -16,20 +16,30 @@ export function ProgressDemo() {
 
   return (
     <>
-      <YStack height={60} alignItems="center" space>
+      <YStack height={60} gap="$5">
         <Paragraph height={30} opacity={0.5}>
           Size: {size}
         </Paragraph>
-        <Progress size={sizeProp} value={progress}>
+        <Progress max={100} size={sizeProp} value={progress}>
           <Progress.Indicator animation="bouncy" />
         </Progress>
+        {Platform.OS === 'ios' && (
+          <Progress
+            w={200}
+            h={20}
+            max={100}
+            native="ios"
+            size={sizeProp}
+            value={progress}
+          />
+        )}
       </YStack>
 
       <XStack
         alignItems="center"
         space
         position="absolute"
-        bottom="$3"
+        bottom="$-10"
         left="$4"
         $xxs={{ display: 'none' }}
       >

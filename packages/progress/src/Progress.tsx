@@ -7,14 +7,20 @@ import type { Scope } from '@tamagui/create-context'
 import { createContextScope } from '@tamagui/create-context'
 import { getSize } from '@tamagui/get-token'
 import { withStaticProperties } from '@tamagui/helpers'
-import { ThemeableStack, YStackProps } from '@tamagui/stacks'
+import { ThemeableStack } from '@tamagui/stacks'
 import * as React from 'react'
-import { View } from 'react-native'
+import { Platform } from 'react-native'
+
+import { Progress as NativeProgressIOS } from './NativeProgressIOS'
 
 const PROGRESS_NAME = 'Progress'
 
 const [createProgressContext, createProgressScope] = createContextScope(PROGRESS_NAME)
-type ProgressContextValue = { value: number | null; max: number; width: number }
+type ProgressContextValue = {
+  value: number | null
+  max: number
+  width: number
+}
 const [ProgressProvider, useProgressContext] =
   createProgressContext<ProgressContextValue>(PROGRESS_NAME)
 
@@ -151,6 +157,7 @@ export const ProgressFrame = styled(ThemeableStack, {
 interface ProgressExtraProps {
   value?: number | null | undefined
   max?: number
+  native?: 'ios'
   getValueLabel?(value: number, max: number): string
 }
 
@@ -172,6 +179,10 @@ const Progress = withStaticProperties(
     const value = isValidValueNumber(valueProp, max) ? valueProp : null
     const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined
     const [width, setWidth] = React.useState(0)
+
+    if (props.native && Platform.OS === 'ios') {
+      return <NativeProgressIOS {...props} />
+    }
 
     return (
       <ProgressProvider scope={__scopeProgress} value={value} max={max} width={width}>
@@ -203,5 +214,5 @@ const Progress = withStaticProperties(
   }
 )
 
-export { createProgressScope, Progress, ProgressIndicator }
-export type { ProgressProps, ProgressIndicatorProps }
+export { Progress, ProgressIndicator, createProgressScope }
+export type { ProgressIndicatorProps, ProgressProps }
