@@ -7302,6 +7302,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@tamagui/context-menu@workspace:code/ui/context-menu":
+  version: 0.0.0-use.local
+  resolution: "@tamagui/context-menu@workspace:code/ui/context-menu"
+  dependencies:
+    "@tamagui/build": "npm:1.121.6"
+    "@tamagui/core": "npm:1.121.6"
+    "@tamagui/popover": "npm:1.121.6"
+    react: "npm:^18.2.0"
+  peerDependencies:
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@tamagui/core-test@workspace:code/core/core-test":
   version: 0.0.0-use.local
   resolution: "@tamagui/core-test@workspace:code/core/core-test"
@@ -7499,6 +7512,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@tamagui/dropdown-menu@workspace:code/ui/dropdown-menu":
+  version: 0.0.0-use.local
+  resolution: "@tamagui/dropdown-menu@workspace:code/ui/dropdown-menu"
+  dependencies:
+    "@tamagui/build": "npm:1.121.6"
+    "@tamagui/core": "npm:1.121.6"
+    "@tamagui/popover": "npm:1.121.6"
+    react: "npm:^18.2.0"
+  peerDependencies:
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@tamagui/elements@npm:1.121.6, @tamagui/elements@workspace:code/ui/elements":
   version: 0.0.0-use.local
   resolution: "@tamagui/elements@workspace:code/ui/elements"
@@ -7526,6 +7552,19 @@ __metadata:
     "@tamagui/build": "npm:1.121.6"
     react: "npm:*"
     react-native: "npm:^0.76.5"
+  peerDependencies:
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
+"@tamagui/focus-guard@workspace:code/ui/focus-guard":
+  version: 0.0.0-use.local
+  resolution: "@tamagui/focus-guard@workspace:code/ui/focus-guard"
+  dependencies:
+    "@tamagui/build": "npm:1.121.6"
+    "@tamagui/compose-refs": "npm:1.121.6"
+    "@tamagui/use-event": "npm:1.121.6"
+    react: "npm:^18.2.0"
   peerDependencies:
     react: "*"
   languageName: unknown
@@ -24336,7 +24375,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:*, react@npm:^18.3.1, react@npm:react@18.3.1":
+"react@npm:*, react@npm:^18.2.0, react@npm:^18.3.1, react@npm:react@18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
