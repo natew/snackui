@@ -17,6 +17,7 @@ import { isObj } from './isObj'
 import { normalizeStyle } from './normalizeStyle'
 import { pseudoDescriptors } from './pseudoDescriptors'
 import { skipProps } from './skipProps'
+import { resolveRem } from './resolveRem'
 
 export const propMapper: PropMapper = (key, value, styleState, disabled, map) => {
   if (disabled) {
@@ -66,6 +67,8 @@ export const propMapper: PropMapper = (key, value, styleState, disabled, map) =>
       value = getTokenForKey(key, value, styleProps.resolveValues, styleState)
     } else if (isVariable(value)) {
       value = resolveVariableValue(key, value, styleProps.resolveValues)
+    } else if (typeof value === 'string' && value.includes('rem')) {
+      value = resolveRem(value)
     }
   }
 
