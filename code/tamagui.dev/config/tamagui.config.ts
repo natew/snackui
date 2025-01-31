@@ -54,8 +54,9 @@ export const config = {
   settings: {
     defaultFont: 'body',
     shouldAddPrefersColorThemes: true,
+    addThemeClassName: 'body',
+    styleCompat: 'legacy',
     maxDarkLightNesting: 2,
-    themeClassNameOnRoot: true,
     mediaQueryDefaultActive,
     selectionStyles: (theme) => ({
       backgroundColor: theme.color5,
