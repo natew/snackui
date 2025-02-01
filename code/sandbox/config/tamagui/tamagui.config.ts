@@ -20,6 +20,8 @@ export const config = createTamagui({
   shorthands,
   settings: {
     defaultFont: 'body',
+    fastSchemeChange: true,
+    maxDarkLightNesting: 1,
     shouldAddPrefersColorThemes: true,
     themeClassNameOnRoot: true,
     // onlyAllowShorthands: true,

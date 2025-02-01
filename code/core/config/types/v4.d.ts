@@ -510,9 +510,13 @@ export declare const defaultConfig: {
         fastSchemeChange: true;
         shouldAddPrefersColorThemes: true;
         allowedStyleValues: "somewhat-strict-web";
+<<<<<<< HEAD
+        addThemeClassName: "html";
+=======
         themeClassNameOnRoot: true;
         onlyAllowShorthands: true;
         maxDarkLightNesting: number;
+>>>>>>> master
     };
 };
 //# sourceMappingURL=v4.d.ts.map
