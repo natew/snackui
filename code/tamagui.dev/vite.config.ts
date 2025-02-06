@@ -76,7 +76,7 @@ export default {
   },
 
   ssr: {
-    external: ['@tamagui/mdx-2', ''],
+    external: ['@tamagui/mdx-2'],
     noExternal: true,
   },
 
@@ -88,9 +88,11 @@ export default {
     one({
       react: {
         compiler: true,
-        scan: true,
-        // compiler: true,
-        // compiler: optimize,
+        // scan: {
+        //   options: {
+        //     log: true,
+        //   },
+        // },
       },
 
       deps: {
